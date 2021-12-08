@@ -2,6 +2,9 @@ import Head from 'next/head';
 import { Header, Footer } from '../../components';
 import Hero from './hero';
 import { client } from '../../client';
+import {GetStaticPropsContext} from "next";
+import {getNextStaticProps} from "@faustjs/next";
+import Page from "../index";
 
 export default function Heroes() {
   const { useQuery } = client;
@@ -31,4 +34,11 @@ export default function Heroes() {
       <Footer copyrightHolder={generalSettings.title} />
     </>
   );
+}
+
+export async function getStaticProps(context: GetStaticPropsContext) {
+  return getNextStaticProps(context, {
+    Page,
+    client,
+  });
 }

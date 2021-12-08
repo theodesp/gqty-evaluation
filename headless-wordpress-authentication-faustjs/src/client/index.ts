@@ -1,15 +1,15 @@
 /**
  * GQTY: You can safely modify this file and Query Fetcher based on your needs
  */
-import type { IncomingMessage } from 'http';
-import {getClient, logQueries} from '@faustjs/next';
+import type { IncomingMessage } from "http";
+import { getClient, logQueries } from "@faustjs/next";
 import {
   generatedSchema,
   scalarsEnumsHash,
   GeneratedSchema,
   SchemaObjectTypes,
   SchemaObjectTypesNames,
-} from './schema.generated';
+} from "./schema.generated";
 
 export const client = getClient<
   GeneratedSchema,
@@ -20,7 +20,9 @@ export const client = getClient<
   scalarsEnumsHash,
 });
 
-logQueries(client, {stringifyJSON: true});
+if (process.env.NODE_ENV === "development") {
+  logQueries(client);
+}
 
 export function serverClient(req: IncomingMessage) {
   return getClient<GeneratedSchema, SchemaObjectTypesNames, SchemaObjectTypes>({
@@ -30,4 +32,4 @@ export function serverClient(req: IncomingMessage) {
   });
 }
 
-export * from './schema.generated';
+export * from "./schema.generated";
