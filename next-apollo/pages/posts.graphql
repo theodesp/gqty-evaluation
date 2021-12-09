@@ -1,0 +1,11 @@
+query GetPostList {
+    posts {
+        nodes {
+            excerpt
+            id
+            databaseId
+            title
+            slug
+        }
+    }
+}

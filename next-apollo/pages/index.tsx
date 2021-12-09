@@ -1,60 +1,41 @@
-import {getNextServerSideProps, getNextStaticProps} from '@faustjs/next';
 
-import {GetServerSidePropsContext, GetStaticPropsContext} from 'next';
-import Head from 'next/head';
-import React from 'react';
-import { CTA, Footer, Header, Hero, Posts } from 'components';
-import styles from 'scss/pages/home.module.scss';
-import { client } from 'client';
+import Head from 'next/head'
+import postsQuery from './posts.graphql';
+import "../styles/pages/home.module.scss";
+import React from "react";
+import Header from "../components/header";
+import Posts from "../components/posts";
+import {GetPostList, GetPostList_posts_nodes} from "../types";
+import {getPosts} from "./getPosts";
 
-export default function Page() {
-  const { usePosts, useQuery } = client;
-  const generalSettings = useQuery().generalSettings;
-  const posts = usePosts({
-    first: 6,
-    where: {
-      categoryName: 'uncategorized',
-    },
-  });
+interface Post {
+  excerpt(): string;
+  id: string;
+  databaseId: number;
+  title: string;
+  slug: string;
+}
 
+interface Props {
+  posts: GetPostList_posts_nodes[]
+}
+
+function Home({posts}: Props) {
   return (
     <>
       <Header
-        title={generalSettings.title}
-        description={generalSettings.description}
+        title={""}
+        description={""}
       />
 
       <Head>
         <title>
-          {generalSettings.title} - {generalSettings.description}
+          {""} - {""}
         </title>
       </Head>
 
       <main className="content">
-        <Hero
-          title="Get Started with Headless"
-          buttonText="Developer Docs"
-          buttonURL="https://faustjs.org"
-          button2Text="Headless on GitHub"
-          button2URL="https://github.com/wpengine/faustjs"
-          bgImage="/images/headless_hero_background.jpg"
-          id={styles.home_hero}>
-          <p>
-            WP&nbsp;Engine’s Headless WordPress Framework includes this example
-            project, the{' '}
-            <a href="https://github.com/wpengine/faustjs#wordpress-plugin">
-              headless WordPress plugin
-            </a>
-            ,{' '}
-            <a href="https://github.com/wpengine/faustjs">headless packages</a>,
-            and{' '}
-            <a href="https://faustjs.org/docs/tutorial/dev-env-setup">
-              tutorials
-            </a>{' '}
-            to make building headless WordPress sites fast and fun.
-          </p>
-        </Hero>
-        <section className={styles.explore}>
+        <section>
           <div className="wrap">
             <h2>Explore this Example Project</h2>
             <p>
@@ -68,8 +49,8 @@ export default function Page() {
               for WordPress integration. Dive in and edit this template at{' '}
               <code>src/pages/index.tsx</code> or discover more below.
             </p>
-            <div className={styles.features}>
-              <div className={styles.feature}>
+            <div>
+              <div>
                 <h3>Global Styles and Fonts</h3>
                 <p>
                   Add styles to load on every page, such as typography and
@@ -83,7 +64,7 @@ export default function Page() {
                 </p>
               </div>
 
-              <div className={styles.feature}>
+              <div>
                 <h3>Components</h3>
                 <p>
                   Add or edit components in the <code>src/components</code>{' '}
@@ -96,7 +77,7 @@ export default function Page() {
                 </p>
               </div>
 
-              <div className={styles.feature}>
+              <div>
                 <h3>Hooks</h3>
                 <p>
                   Fetch data from WordPress with <code>usePost</code>,{' '}
@@ -110,35 +91,32 @@ export default function Page() {
           </div>
         </section>
         <Posts
-          posts={posts.nodes}
+          posts={posts}
           heading="Latest Posts"
           intro="The Posts component in src/pages/index.tsx shows the latest six posts from the connected WordPress site."
           headingLevel="h2"
           postTitleLevel="h3"
-          id={styles.post_list}
         />
-        <CTA
-          title="Questions or comments?"
-          buttonText="Join the discussion on GitHub"
-          buttonURL="https://github.com/wpengine/faustjs/discussions"
-          headingLevel="h2">
-          <p>
-            We welcome feature requests, bug reports and questions in the{' '}
-            <a href="https://github.com/wpengine/faustjs">
-              Headless Framework GitHub repository
-            </a>
-            .
-          </p>
-        </CTA>
       </main>
-      <Footer copyrightHolder={generalSettings.title} />
     </>
-  );
+  )
 }
 
-export async function getServerSideProps(context: GetServerSidePropsContext) {
-  return getNextServerSideProps(context, {
-    Page,
-    client,
-  });
+interface PostsData {
+  posts: {
+    nodes: Post[]
+  }
 }
+
+export async function getServerSideProps() {
+  const posts = await getPosts();
+
+  return {
+    props: {
+      posts: posts
+    },
+  };
+}
+
+
+export default Home

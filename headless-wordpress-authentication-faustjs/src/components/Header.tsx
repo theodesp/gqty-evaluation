@@ -18,13 +18,12 @@ function Header({
   const { menuItems } = client.useQuery();
   const viewer = client?.auth?.useQuery()?.viewer;
 
-  const unauthenticatedLinks = menuItems({
-    where: { location: MenuLocationEnum.UNAUTHENTICATED },
-  }).nodes;
+  const unauthenticatedLinks = [];
 
   const authenticatedLinks = menuItems({
     where: { location: MenuLocationEnum.AUTHENTICATED },
   }).nodes;
+
 
   return (
     <header>
