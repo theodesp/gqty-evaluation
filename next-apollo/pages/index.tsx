@@ -2,11 +2,12 @@
 import Head from 'next/head'
 import postsQuery from './posts.graphql';
 import "../styles/pages/home.module.scss";
-import React from "react";
+import React, {useEffect} from "react";
 import Header from "../components/header";
 import Posts from "../components/posts";
 import {GetPostList, GetPostList_posts_nodes} from "../types";
 import {getPosts} from "./getPosts";
+import {graphql} from "graphql";
 
 interface Post {
   excerpt(): string;
@@ -20,7 +21,13 @@ interface Props {
   posts: GetPostList_posts_nodes[]
 }
 
-function Home({posts}: Props) {
+function Home({}: Props) {
+  const [posts, setPosts] = React.useState([]);
+  useEffect(() => {
+    getPosts<GetPostList>().then(res => {
+      setPosts(res);
+    })
+  }, [])
   return (
     <>
       <Header
@@ -102,21 +109,15 @@ function Home({posts}: Props) {
   )
 }
 
-interface PostsData {
-  posts: {
-    nodes: Post[]
-  }
-}
-
-export async function getServerSideProps() {
-  const posts = await getPosts();
-
-  return {
-    props: {
-      posts: posts
-    },
-  };
-}
+// export async function getServerSideProps() {
+//   const posts = await getPosts<GetPostList>();
+//
+//   return {
+//     props: {
+//       posts: posts
+//     },
+//   };
+// }
 
 
 export default Home

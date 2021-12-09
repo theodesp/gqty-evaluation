@@ -6,10 +6,16 @@
 //   connectToDevTools: true
 // });
 
-import { createClient } from 'urql'
+import { createClient, defaultExchanges } from 'urql';
+import { devtoolsExchange } from '@urql/devtools';
+import { cacheExchange } from '@urql/exchange-graphcache';
+import schema from '../schema.json';
+
+const csEx = cacheExchange({ schema });
 
 const client = createClient({
   url: 'http://localhost:10003/graphql',
+  exchanges: [devtoolsExchange, csEx, ...defaultExchanges],
 })
 
 export default client;
